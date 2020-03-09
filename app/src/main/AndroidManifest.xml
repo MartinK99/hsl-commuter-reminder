@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="fi.metropolia.martikas.commuterreminder">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -13,13 +14,21 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name="fi.metropolia.martikas.commuterreminder.SearchbarActivity" >
+        <activity android:name=".ReminderActivity">
             <intent-filter>
-                <action android:name="SEARCH" />
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="fi.metropolia.martikas.commuterreminder.action.START_REMINDER" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name="fi.metropolia.martikas.commuterreminder.MainActivity">
+        <activity android:name=".SearchbarActivity">
+            <intent-filter>
+                <action android:name="fi.metropolia.martikas.commuterreminder.action.SEARCH" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

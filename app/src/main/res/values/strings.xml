@@ -4,4 +4,10 @@
     <string name="search_origin_hint">Search origin…</string>
     <string name="search_destination_hint">Search destination…</string>
     <string name="confirm_button">Set up timer</string>
+    <string name="arrive_by_text">Arrive by</string>
+    <string name="time_change_button">Change</string>
+    <string name="circle_image_view_description">Visual representation of status</string>
+    <string name="reminder_additional_text">Your recommended departure is in</string>
+    <string name="reminder_additional_text_negative">Your recommended departure was</string>
+    <string name="change_settings_button">Change settings</string>
 </resources>

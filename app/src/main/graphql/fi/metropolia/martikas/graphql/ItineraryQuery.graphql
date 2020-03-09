@@ -1,0 +1,22 @@
+query ItineraryQuery($originLat: Float!, $originLon: Float!, $destinationLat: Float!, $destinationLon: Float!, $time: String, $date: String){
+  plan(
+    from: {lat: $originLat, lon: $originLon},
+    to: {lat: $destinationLat, lon: $destinationLon},
+    date: $date,
+    time: $time,
+    arriveBy: true,
+		numItineraries: 1
+  ) {
+    itineraries {
+      legs {
+        startTime
+        endTime
+        mode
+        duration
+        realTime
+        distance
+        transitLeg
+      }
+    }
+  }
+}

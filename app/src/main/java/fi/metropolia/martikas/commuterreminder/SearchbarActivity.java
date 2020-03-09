@@ -33,10 +33,19 @@ public class SearchbarActivity extends AppCompatActivity {
     private SearchAdapter searchAdapter;
     private RecyclerView.LayoutManager layoutManager;
 
+    private static final String BASE_URL = "https://api.digitransit.fi/";
+
+    private static final String EXTRA_COORDINATES = "fi.metropolia.martikas.commuterreminder.extra.COORDINATES";
+    private static final String EXTRA_FIELD_TYPE = "fi.metropolia.martikas.commuterreminder.extra.FIELD_TYPE";
+    private static final String EXTRA_SELECTED_ADDRESS = "fi.metropolia.martikas.commuterreminder.extra.SELECTED_ADDRESS";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_searchbar);
+
+        Intent intent = getIntent();
+        sourceType = intent.getStringExtra(EXTRA_FIELD_TYPE);
 
         recyclerView = (RecyclerView) findViewById(R.id.searchRecyclerView);
 
@@ -52,19 +61,10 @@ public class SearchbarActivity extends AppCompatActivity {
         searchAdapter = new SearchAdapter();
         recyclerView.setAdapter(searchAdapter);
 
-        searchAdapter.setOnItemClickListener(new SearchAdapter.ClickListener() {
-            @Override
-            public void onItemClick(Feature item) {
-                onItemSelect(item);
-            }
-        });
-
-
-        Intent intent = getIntent();
-        sourceType = intent.getStringExtra("fi.metropolia.martikas.searchbar.TYPE");
+        searchAdapter.setOnItemClickListener(item -> onItemSelect(item));
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.digitransit.fi/")
+                .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -87,45 +87,43 @@ public class SearchbarActivity extends AppCompatActivity {
         });
         subject = PublishSubject.create();
         subject.debounce(500, TimeUnit.MILLISECONDS)
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(final String value) {
-                        try {
-                            Call<SearchResultStructure> call = service.getSearchResult(value, "gtfshsl");
-                            call.enqueue(new Callback<SearchResultStructure>() {
-                                @Override
-                                public void onResponse(Call<SearchResultStructure> call, Response<SearchResultStructure> response) {
-                                    if (response.body() != null) {
-                                        String[] result = new String[response.body().getFeatures().length];
-                                        int i = 0;
-                                        for (Feature feature : response.body().getFeatures()) {
-                                            result[i] = feature.getProperties().getLabel();
-                                            i++;
-                                        }
-                                        searchAdapter.setSearchList(response.body());
-                                        searchAdapter.notifyDataSetChanged();
-                                    } else {
-                                        Log.e("API_CALL", "RESPONSE BODY NULL");
+                .subscribe(value -> {
+                    try {
+                        Call<SearchResultStructure> call = service.getSearchResult(value, "gtfshsl");
+                        call.enqueue(new Callback<SearchResultStructure>() {
+                            @Override
+                            public void onResponse(Call<SearchResultStructure> call, Response<SearchResultStructure> response) {
+                                if (response.body() != null) {
+                                    String[] result = new String[response.body().getFeatures().length];
+                                    int i = 0;
+                                    for (Feature feature : response.body().getFeatures()) {
+                                        result[i] = feature.getProperties().getLabel();
+                                        i++;
                                     }
+                                    searchAdapter.setSearchList(response.body());
+                                    searchAdapter.notifyDataSetChanged();
+                                } else {
+                                    Log.e("API_CALL", "RESPONSE BODY NULL");
                                 }
+                            }
 
-                                @Override
-                                public void onFailure(Call<SearchResultStructure> call, Throwable t) {
-                                    Log.e("API_CALL", t.getMessage());
-                                }
-                            });
-                        } catch (Exception e) {
-                            Log.e("SUBSCRIBER", e.getMessage());
-                        }
+                            @Override
+                            public void onFailure(Call<SearchResultStructure> call, Throwable t) {
+                                Log.e("API_CALL", t.getMessage());
+                            }
+                        });
+                    } catch (Exception e) {
+                        Log.e("SUBSCRIBER", e.getMessage());
                     }
                 });
+        searchbar.requestFocus();
     }
 
     public void onItemSelect(Feature selectedItem) {
         Intent intent = new Intent();
-        intent.putExtra("selectedAddress", selectedItem.getProperties().getLabel());
-        intent.putExtra("coordinates", selectedItem.getGeometry().getCoordinates());
-        intent.putExtra("fi.metropolia.martikas.searchbar.TYPE", sourceType);
+        intent.putExtra(EXTRA_SELECTED_ADDRESS, selectedItem.getProperties().getLabel());
+        intent.putExtra(EXTRA_COORDINATES, selectedItem.getGeometry().getCoordinates());
+        intent.putExtra(EXTRA_FIELD_TYPE, sourceType);
         setResult(RESULT_OK, intent);
         finish();
     }

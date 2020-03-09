@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+apply plugin: 'com.apollographql.android'
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -35,4 +37,15 @@ dependencies {
     implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
     implementation 'com.squareup.retrofit2:retrofit:2.7.2'
     implementation 'com.squareup.retrofit2:converter-gson:2.7.2'
+    implementation 'com.apollographql.apollo:apollo-runtime:1.0.0'
+    implementation "com.apollographql.apollo:apollo-android-support:1.0.0"
+    implementation 'com.squareup.okhttp3:okhttp:3.0.1'
+    compileOnly("org.jetbrains:annotations:13.0")
+    testCompileOnly("org.jetbrains:annotations:13.0")
+}
+
+apollo {
+    customTypeMapping = [
+            "Long": "java.lang.Long"
+    ]
 }
