@@ -5,7 +5,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import fi.metropolia.martikas.commuterreminder.model.Feature;
 import fi.metropolia.martikas.commuterreminder.model.SearchResultStructure;
-import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -21,6 +20,11 @@ import android.util.Log;
 import android.widget.EditText;
 
 import java.util.concurrent.TimeUnit;
+
+/**
+ * Responsible for holding the recycler view and fetching live data from a REST API using the user input.
+ * On selection of an item in the recycler view returning to the main activity.
+ */
 
 public class SearchbarActivity extends AppCompatActivity {
 

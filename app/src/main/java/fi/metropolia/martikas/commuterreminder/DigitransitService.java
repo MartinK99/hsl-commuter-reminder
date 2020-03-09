@@ -5,6 +5,11 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
+/**
+ * Helper interface of the retrofit library.
+ * Declaring the method of retrieving data from the API.
+ */
+
 public interface DigitransitService {
 
     @GET("geocoding/v1/autocomplete")

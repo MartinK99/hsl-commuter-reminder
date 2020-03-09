@@ -15,9 +15,13 @@ import com.apollographql.apollo.exception.ApolloException;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import fi.metropolia.martikas.graphql.ItineraryQuery;
+
+/**
+ * Responsible for retrieving live data using the GraphQL protocol and the Apollo client.
+ * It then populates or updates the Reminder UI with fresh data.
+ */
 
 public class ReminderInterface extends Thread {
 
@@ -29,7 +33,7 @@ public class ReminderInterface extends Thread {
     private final int timeBuffer;
     private Activity activity;
 
-    public ReminderInterface(Activity activity, TextView timeLeftText, TextView timeLeftAdditionalText, ImageView circleImage, double[] origin, double[] destination, String arrivalTime, int timeBuffer) {
+    ReminderInterface(Activity activity, TextView timeLeftText, TextView timeLeftAdditionalText, ImageView circleImage, double[] origin, double[] destination, String arrivalTime, int timeBuffer) {
         this.activity = activity;
         this.timeLeftText = timeLeftText;
         this.circleImage = circleImage;
@@ -68,7 +72,7 @@ public class ReminderInterface extends Thread {
         }
     }
 
-    public void getItinerary(double originLat, double originLon, double destinationLat, double destinationLon, String date, String time) {
+    private void getItinerary(double originLat, double originLon, double destinationLat, double destinationLon, String date, String time) {
         ApolloConnector.setupApollo().query(
                 ItineraryQuery
                         .builder()
@@ -104,46 +108,7 @@ public class ReminderInterface extends Thread {
                                     hours--;
                                 }
 
-                                if (hours > 0 || min > 30) { //GREEN
-                                    activity.runOnUiThread(() -> {
-                                        timeLeftText.setTextColor(Color.parseColor("#FF77D353"));
-                                        circleImage.setImageResource(R.drawable.circle_green);
-                                    });
-                                } else if (min > 10) { //YELLOW
-                                    activity.runOnUiThread(() -> {
-                                        timeLeftText.setTextColor(Color.parseColor("#FFFFBD00"));
-                                        circleImage.setImageResource(R.drawable.circle_yellow);
-                                    });
-                                } else if (min > 0) { //RED
-                                    activity.runOnUiThread(() -> {
-                                        timeLeftText.setTextColor(Color.parseColor("#FFF95F62"));
-                                        circleImage.setImageResource(R.drawable.circle_red);
-                                    });
-                                } else { //EXCALMATION
-                                    activity.runOnUiThread(() -> {
-                                        timeLeftText.setTextColor(Color.parseColor("#FFF95F62"));
-                                        circleImage.setImageResource(R.drawable.circle_red_exclamation);
-                                    });
-                                }
-                                if (min >= 0) {
-                                    activity.runOnUiThread(() ->timeLeftAdditionalText.setText(R.string.reminder_additional_text));
-                                    int finalMin = min;
-                                    if (hours != 0) {
-                                        int finalHours = hours;
-                                        activity.runOnUiThread(() -> timeLeftText.setText(finalHours + "h " + finalMin + "min"));
-                                    } else {
-                                        activity.runOnUiThread(() -> timeLeftText.setText(finalMin + "min"));
-                                    }
-                                } else {
-                                    activity.runOnUiThread(() ->timeLeftAdditionalText.setText(R.string.reminder_additional_text_negative));
-                                    int finalMin = -min;
-                                    if (hours != 0) {
-                                        int finalHours = -hours;
-                                        activity.runOnUiThread(() -> timeLeftText.setText(finalHours + "h " + finalMin + "min ago"));
-                                    } else {
-                                        activity.runOnUiThread(() -> timeLeftText.setText(finalMin + "min ago"));
-                                    }
-                                }
+                                updateUI(hours, min);
                             } else {
                                 activity.runOnUiThread(() -> timeLeftText.setText("NO ITINERARIES"));
                             }
@@ -158,5 +123,48 @@ public class ReminderInterface extends Thread {
                         Log.e("REMINDERTHREAD", e.getMessage());
                     }
                 });
+    }
+
+    private void updateUI(int hours, int min) {
+        if (hours > 0 || min > 30) { //GREEN
+            activity.runOnUiThread(() -> {
+                timeLeftText.setTextColor(Color.parseColor("#FF77D353"));
+                circleImage.setImageResource(R.drawable.circle_green);
+            });
+        } else if (min > 10) { //YELLOW
+            activity.runOnUiThread(() -> {
+                timeLeftText.setTextColor(Color.parseColor("#FFFFBD00"));
+                circleImage.setImageResource(R.drawable.circle_yellow);
+            });
+        } else if (min > 0) { //RED
+            activity.runOnUiThread(() -> {
+                timeLeftText.setTextColor(Color.parseColor("#FFF95F62"));
+                circleImage.setImageResource(R.drawable.circle_red);
+            });
+        } else { //EXCALMATION
+            activity.runOnUiThread(() -> {
+                timeLeftText.setTextColor(Color.parseColor("#FFF95F62"));
+                circleImage.setImageResource(R.drawable.circle_red_exclamation);
+            });
+        }
+        if (min >= 0) {
+            activity.runOnUiThread(() ->timeLeftAdditionalText.setText(R.string.reminder_additional_text));
+            int finalMin = min;
+            if (hours != 0) {
+                int finalHours = hours;
+                activity.runOnUiThread(() -> timeLeftText.setText(finalHours + "h " + finalMin + "min"));
+            } else {
+                activity.runOnUiThread(() -> timeLeftText.setText(finalMin + "min"));
+            }
+        } else {
+            activity.runOnUiThread(() ->timeLeftAdditionalText.setText(R.string.reminder_additional_text_negative));
+            int finalMin = -min;
+            if (hours != 0) {
+                int finalHours = -hours;
+                activity.runOnUiThread(() -> timeLeftText.setText(finalHours + "h " + finalMin + "min ago"));
+            } else {
+                activity.runOnUiThread(() -> timeLeftText.setText(finalMin + "min ago"));
+            }
+        }
     }
 }

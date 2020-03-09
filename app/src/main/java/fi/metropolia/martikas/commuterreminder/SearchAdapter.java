@@ -10,6 +10,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import fi.metropolia.martikas.commuterreminder.model.Feature;
 import fi.metropolia.martikas.commuterreminder.model.SearchResultStructure;
 
+/**
+ * The adapter for the recycler list view in SearchbarActivity.
+ * It recieves custom Objects from the REST-API response called Features and shows attributes from it, while preserving others.
+ * That way additional information not shown can be retrieved.
+ */
+
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchViewHolder> {
 
     public static class SearchViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

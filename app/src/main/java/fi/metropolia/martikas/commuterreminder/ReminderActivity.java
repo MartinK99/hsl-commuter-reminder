@@ -1,18 +1,17 @@
 package fi.metropolia.martikas.commuterreminder;
 
 import androidx.appcompat.app.AppCompatActivity;
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.disposables.Disposable;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+/**
+ * Responsible for retrieving live data from the Reminder interface and showing the results.
+ * A link to the main activity for changing settings.
+ */
 
 public class ReminderActivity extends AppCompatActivity {
 

@@ -4,6 +4,11 @@ import com.apollographql.apollo.ApolloClient;
 
 import okhttp3.OkHttpClient;
 
+/**
+ * Helper class conforming to the Apollo library.
+ * Declaring the endpoint of the data source.
+ */
+
 public class ApolloConnector {
 
     private static final String BASE_URL = "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql";

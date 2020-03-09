@@ -4,17 +4,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
 import android.content.Intent;
-import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.util.Date;
+/**
+ * Entry point of the application. Links to the Search activity and Reminder activity.
+ * Shows selected results from the search action and configures arrival time and time buffer.
+ */
 
 public class MainActivity extends AppCompatActivity implements TimePickerFragment.TimePickedListener {
 
