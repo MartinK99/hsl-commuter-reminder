@@ -70,10 +70,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
             return 0;
     }
 
-    public SearchResultStructure getSearchList() {
-        return searchList;
-    }
-
     public void setSearchList(SearchResultStructure searchList) {
         this.searchList = searchList;
     }

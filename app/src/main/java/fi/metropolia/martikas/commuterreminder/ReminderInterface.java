@@ -26,9 +26,10 @@ public class ReminderInterface extends Thread {
     private final String arrivalTime;
     private final int arrivalHour, arrivalMinute;
     private final ImageView circleImage;
+    private final int timeBuffer;
     private Activity activity;
 
-    public ReminderInterface(Activity activity, TextView timeLeftText, TextView timeLeftAdditionalText, ImageView circleImage, double[] origin, double[] destination, String arrivalTime) {
+    public ReminderInterface(Activity activity, TextView timeLeftText, TextView timeLeftAdditionalText, ImageView circleImage, double[] origin, double[] destination, String arrivalTime, int timeBuffer) {
         this.activity = activity;
         this.timeLeftText = timeLeftText;
         this.circleImage = circleImage;
@@ -36,6 +37,7 @@ public class ReminderInterface extends Thread {
         this.destination = destination;
         this.arrivalTime = arrivalTime;
         this.timeLeftAdditionalText = timeLeftAdditionalText;
+        this.timeBuffer = timeBuffer;
 
         String[] arrivalHourAndMinute = arrivalTime.split(":");
         arrivalHour = Integer.parseInt(arrivalHourAndMinute[0]);
@@ -67,7 +69,6 @@ public class ReminderInterface extends Thread {
     }
 
     public void getItinerary(double originLat, double originLon, double destinationLat, double destinationLon, String date, String time) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         ApolloConnector.setupApollo().query(
                 ItineraryQuery
                         .builder()
@@ -91,8 +92,17 @@ public class ReminderInterface extends Thread {
                                 int days = (int) (difference / (1000 * 60 * 60 * 24));
                                 int hours = (int) ((difference - (1000 * 60 * 60 * 24 * days)) / (1000 * 60 * 60));
                                 int min = (int) (difference - (1000 * 60 * 60 * 24 * days) - (1000 * 60 * 60 * hours)) / (1000 * 60);
-                                //hours = (hours < 0 ? -hours : hours);
                                 Log.d("TIME", days + ":" + hours + ":" + min);
+
+                                min -= timeBuffer;
+                                if (min < 0 && hours > 0) {
+                                    min = 60 + min;
+                                    hours--;
+                                }
+                                if (min < -60){
+                                    min = min + 60;
+                                    hours--;
+                                }
 
                                 if (hours > 0 || min > 30) { //GREEN
                                     activity.runOnUiThread(() -> {
@@ -117,19 +127,21 @@ public class ReminderInterface extends Thread {
                                 }
                                 if (min >= 0) {
                                     activity.runOnUiThread(() ->timeLeftAdditionalText.setText(R.string.reminder_additional_text));
+                                    int finalMin = min;
                                     if (hours != 0) {
                                         int finalHours = hours;
-                                        activity.runOnUiThread(() -> timeLeftText.setText(finalHours + "h " + min + "min"));
+                                        activity.runOnUiThread(() -> timeLeftText.setText(finalHours + "h " + finalMin + "min"));
                                     } else {
-                                        activity.runOnUiThread(() -> timeLeftText.setText(min + "min"));
+                                        activity.runOnUiThread(() -> timeLeftText.setText(finalMin + "min"));
                                     }
                                 } else {
                                     activity.runOnUiThread(() ->timeLeftAdditionalText.setText(R.string.reminder_additional_text_negative));
+                                    int finalMin = -min;
                                     if (hours != 0) {
                                         int finalHours = -hours;
-                                        activity.runOnUiThread(() -> timeLeftText.setText(finalHours + "h " + -min + "min ago"));
+                                        activity.runOnUiThread(() -> timeLeftText.setText(finalHours + "h " + finalMin + "min ago"));
                                     } else {
-                                        activity.runOnUiThread(() -> timeLeftText.setText(-min + "min ago"));
+                                        activity.runOnUiThread(() -> timeLeftText.setText(finalMin + "min ago"));
                                     }
                                 }
                             } else {
@@ -146,15 +158,5 @@ public class ReminderInterface extends Thread {
                         Log.e("REMINDERTHREAD", e.getMessage());
                     }
                 });
-    }
-
-    public String convertUNIXToEET(long ts) {
-        // convert seconds to milliseconds
-        Date date = new java.util.Date(ts);
-        // the format of your date
-        SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm");
-        // give a timezone reference for formatting (see comment at the bottom)
-        sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT+2"));
-        return sdf.format(date);
     }
 }
