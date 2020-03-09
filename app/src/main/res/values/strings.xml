@@ -11,6 +11,7 @@
     <string name="reminder_additional_text">Your recommended departure is in</string>
     <string name="reminder_additional_text_negative">Your recommended departure was</string>
     <string name="change_settings_button">Change settings</string>
+    <string name="time_buffer_help_text">Addtitional time before departure</string>
     <string-array name="time_buffer_array">
         <item>+0 min</item>
         <item>+5 min</item>
